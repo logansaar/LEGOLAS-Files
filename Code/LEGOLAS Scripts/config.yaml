@@ -1,0 +1,36 @@
+devices:
+  depo:
+    s_positions:
+      full_down: -237
+      full_up: 52
+    vol_deg_map:
+      0.0: 0
+      0.5: 200
+      0.7: 300
+    x_offset: -63
+    y_offset: -189
+  pH:
+    pH_positions:
+      full_down: -407
+      full_up: -103
+    verbose: true
+    x_offset: 0
+    y_offset: 0
+global:
+  pi1_address: 192.168.0.2
+  pi2_address: 192.168.0.3
+stage:
+  aux_loc_map:
+    acid:
+    - -1319
+    - -127
+    base:
+    - -1319
+    - -656
+    clean:
+    - -1142
+    - -427
+  cell_loc_map: C:\Users\logan\Documents\Fall 2022\Research\LEGOLAS Project Files\LEGOLAS
+    Files\cell_map.pkl
+  home_x_offset: -100
+  home_y_offset: -100
