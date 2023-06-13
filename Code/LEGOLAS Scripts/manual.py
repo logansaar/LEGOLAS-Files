@@ -114,14 +114,14 @@ def goto_motor_pos(positions_map, entry_pos_name, motor):
         pos_name = entry_pos_name.get()
         
         pos = positions_map[pos_name]
-        motor_move_to_pos(
-            motor=motor,
-            pos=pos,
-            speed=5,
-            max_iter=4
-        )
-        # curr_pos = motor.get_position()
-        # motor.run_for_degrees(pos-curr_pos, speed=5)
+        #motor.move_to_pos(
+        #    motor=motor,
+        #    pos=pos,
+        #    speed=5,
+        #    max_iter=4
+        #)
+        curr_pos = motor.get_position()
+        motor.run_for_degrees(pos-curr_pos, speed=5)
     else:
         pass
 
