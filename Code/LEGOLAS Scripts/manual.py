@@ -679,6 +679,8 @@ def connect_pis(win, frame):
     try:
         conn, r_buildhat1, r_serial1, r_threading1, sensor_X, motor_Y, sensor_Y, pH_serial = connect_pi1(host_1, ports_map=ports_map_pi1)
         context.pi1_address = host_1
+
+        context.stage.motor_Y._write(f"port {context.stage.motor_Y.port} ; coast\r")
     except Exception as e:
         messagebox.showerror("Error", f"Cannot connect to Pi1, try again.\n {e}")
         return 
@@ -688,6 +690,11 @@ def connect_pis(win, frame):
     try:
         conn, r_buildhat2, motor_X, motor_pH, motor_S, motor_V = connect_pi2(host_2, ports_map=ports_map_pi2)
         context.pi2_address = host_2
+
+        context.pH_device.motor_pH._write(f"port {context.pH_device.motor_pH.port} ; coast\r")
+        context.depo_device.motor_S._write(f"port {context.depo_device.motor_S.port} ; coast\r")
+        context.depo_device.motor_V._write(f"port {context.depo_device.motor_V.port} ; coast\r")
+        context.stage.motor_X._write(f"port {context.stage.motor_X.port} ; coast\r")
     except Exception as e:
         messagebox.showerror("Error", f"Cannot connect to Pi2, try again.\n {e}")
         return
@@ -760,6 +767,12 @@ def load_config(win, frame):
         context.pi1_address = config['global']['pi1_address']
         context.pi2_address = config['global']['pi2_address']
 
+        context.stage = stage
+        context.pH_device = pH_device
+        context.depo_device = depo_device
+        context.pi1_address = config['global']['pi1_address']
+        context.pi2_address = config['global']['pi2_address']
+        
     except Exception as e:
 
         ( r_buildhat1, r_serial1, r_threading1, 
