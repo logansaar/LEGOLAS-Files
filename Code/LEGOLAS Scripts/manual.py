@@ -1,5 +1,8 @@
 from core import *
 import utils
+
+import threading
+
 import tkinter as tk
 import tkinter.ttk as ttk
 
@@ -45,6 +48,35 @@ class Context:
     pi1_address = None
     pi2_address = None
 
+@dataclass
+class ConnectionManager:
+    """
+        This class manage all the rpyc connection
+    """
+    # TODO: add connection checker method
+
+    pi1_conn = None
+    pi2_conn = None
+
+    def close(self):
+        if self.pi1_conn is not None:
+            self.pi1_conn.close()
+        if self.pi2_conn is not None:
+            self.pi2_conn.close()
+
+    def isclosed(self):
+        return {
+            "pi1" : self.pi1_conn.closed if self.pi1_conn is not None else False,
+            "pi2" : self.pi2_conn.closed if self.pi2_conn is not None else False,
+        }
+
+class App(threading.Thread):
+    def run(self):
+        self.win = tk.Tk()
+        main(self.win) # this send it to mainloop
+        # self.win.mainloop()
+
+connection_manager = ConnectionManager()
 context = Context()
 
 # define all the UI
@@ -703,11 +735,13 @@ def reset_pis_server(win, frame):
 
 def connect_pis(win, frame):
     global context
-
+    global connection_manager
+    
     host_1 = simpledialog.askstring("Input", "Pi1 IP address", parent=win)
     host_1 = host_1.strip()
     try:
         conn, r_buildhat1, r_serial1, r_threading1, sensor_X, motor_Y, sensor_Y, pH_serial = connect_pi1(host_1, ports_map=ports_map_pi1)
+        connection_manager.pi1_conn = conn
         context.pi1_address = host_1
 
     except Exception as e:
@@ -718,6 +752,7 @@ def connect_pis(win, frame):
     host_2 = host_2.strip()
     try:
         conn, r_buildhat2, motor_X, motor_pH, motor_S, motor_V = connect_pi2(host_2, ports_map=ports_map_pi2)
+        connection_manager.pi2_conn = conn
         context.pi2_address = host_2
 
     except Exception as e:
@@ -777,7 +812,8 @@ def export_config(win):
                                     initialdir=os.getcwd(),
                                     title="Please enter the export path of the configuration file:",
                                     filetypes= [('all files', '.*'), ('yaml files', '.yaml')])
-    
+    path = Path(path)
+
     try:
         manager.export(folder=path.parent, config_name=path.name)
     except Exception as e:
@@ -897,8 +933,7 @@ def load_config(win, frame):
 #     return r_buildhat1, r_serial1, r_threading1, motor_X, sensor_X, motor_Y, sensor_Y, r_buildhat2, motor_pH, motor_S, motor_V
 
 
-def main():
-    win = tk.Tk()
+def main(win):
     win.geometry("600x450")
     win.title("Device Calibration")
     sv_ttk.set_theme('dark')
@@ -917,79 +952,40 @@ def main():
 
     win.mainloop()
 
-    # ( r_buildhat1, r_serial1, r_threading1, 
-    # motor_X, sensor_X, motor_Y, sensor_Y, 
-    # r_buildhat2, motor_pH, motor_S, motor_V ) = setup_connection()
-
-    # ( r_buildhat1, r_serial1, r_threading1, 
-    # motor_X, sensor_X, motor_Y, sensor_Y, 
-    # r_buildhat2, motor_pH, motor_S, motor_V ) = [None] * 11
-
-    # stage = Stage(
-    #     motor_X = motor_X,
-    #     motor_Y = motor_Y,
-    #     sensor_X = sensor_X,
-    #     sensor_Y = sensor_Y,
-    #     home_x_offset = -100, 
-    #     home_y_offset = -100, 
-    #     cell_loc_map = np.array([[]]),
-    #     aux_loc_map = {}
-    # )
-
-
-    # depo_device = DepositionDevice(
-    #     stage, 
-    #     x_offset=None, 
-    #     y_offset=None, 
-    #     motor_S=motor_S, 
-    #     motor_V=motor_V, 
-    #     vol_deg_map={}, 
-    #     s_positions={},
-    # )
-
-    # pH_device = pHDevice(
-    #     stage, 
-    #     x_offset=None, 
-    #     y_offset=None, 
-    #     motor_pH=motor_pH, 
-    #     pH_positions={}, 
-    #     pH_serial=r_serial1, 
-    #     verbose=True
-    # )
-
-    # x_step = 25
-    # y_step = 25
-    # motor_X.run_for_degrees(degrees=-x_step)
-    # motor_X.run_for_degrees(degrees=x_step)
-
-    # motor_Y.run_for_degrees(degrees=-y_step)
-    # motor_Y.run_for_degrees(degrees=y_step)
-
-
-    # manual_stage(context)
-
-    # mode = input("Calibration Mode (m / a)")
-
-
-    # if mode == "m":
-    #     manual_stage(motor_X, motor_Y, x_step=x_step, y_step=y_step)
-    # else:
-    #     print("Calibration Start")
-    #     set_stage(stage=stage)
-    #     # we use camera location as 0, 0. which make it easy to calibrate
-    #     set_pH_device(pH_device=pH_device)
-    #     set_depo_device(depo_device=depo_device)
-    #     create_general_locations(stage=stage)
-    #     create_cell_map(stage=stage)
-
-
-
-
 
 if __name__ == "__main__":
+    # import signal
+    # import time
+    win = tk.Tk()
+
     try:
-        main()
+        # app = App()
+        # app.start()
+        print("please do not close the GUI via the Ctrl-C")
+        # while app.is_alive():
+        #     try:
+        #         time.sleep(0.5)
+        #     except Exception as e:
+        #         app.win.destroy()
+        #         break        
+
+        # def signal_handler(signal, frame):
+        #     sys.stderr.write("Exiting...\n")
+
+        #     # think only one of these is needed, not sure
+        #     app.win.destroy()
+        #     app.win.quit()
+
+        # signal.signal(signal.SIGINT, signal_handler)    
+
+        main(win)
     except KeyboardInterrupt:
+        # app.win.destroy()
+        win.destroy()
         print("Detect Keyboard Interrpution, safely exit the loop")
     finally:
         print("")
+
+    # manually close all the conn connection to release the rpyc module
+    # hope it would solve the port already in use issue.
+    connection_manager.close()
