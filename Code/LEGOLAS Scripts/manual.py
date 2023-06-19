@@ -15,7 +15,10 @@ import ctypes
 import sv_ttk
 
 import os
-if os.name == 'nt':
+import platform
+
+# if os.name == 'nt':
+if platform.system() == 'Windows':
     # windows GUI graphic options
     ctypes.windll.shcore.SetProcessDpiAwareness(1)
 else:
@@ -770,11 +773,15 @@ def export_config(win):
     manager.update_device(context.depo_device)
     manager.update_global(pi1_address=context.pi1_address, pi2_address=context.pi2_address)
 
-    path = filedialog.asksaveasfilename(parent=win,
-                                    initialdir=os.getcwd(),
-                                    title="Please enter the export path of the configuration file:",
-                                    filetypes= [('all files', '.*'), ('yaml files', '.yaml')])
-    path = Path(path)
+    if platform.system() == "Darwin":        
+        path = Path(os.getcwd) / "config.yaml"
+        messagebox.showinfo(f"The askfilename module currently is not compatible with Mac. The config file is saved to {path}")
+    else:
+        path = filedialog.asksaveasfilename(parent=win,
+                                        initialdir=os.getcwd(),
+                                        title="Please enter the export path of the configuration file:",
+                                        filetypes= [('all files', '.*'), ('yaml files', '.yaml')])
+        path = Path(path)
     manager.export(folder=path.parent, config_name=path.name)
 
 
