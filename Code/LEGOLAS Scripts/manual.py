@@ -777,13 +777,13 @@ def export_config(win):
                                     initialdir=os.getcwd(),
                                     title="Please enter the export path of the configuration file:",
                                     filetypes= [('all files', '.*'), ('yaml files', '.yaml')])
-    if path is not None:
-        path = Path(path)
-    else:    
+    
+    try:
+        manager.export(folder=path.parent, config_name=path.name)
+    except Exception as e:
         path = Path(os.getcwd()) / "config.yaml"
-        messagebox.showinfo(f"The askfilename module currently is not compatible with {platform.system()}. Error {e}. The config file is saved to {path}")
-
-    manager.export(folder=path.parent, config_name=path.name)
+        messagebox.showinfo(title="Alert", message=f"The askfilename module currently is not compatible with {platform.system()}. The config file is saved to {path}")
+        manager.export(folder=path.parent, config_name=path.name)
 
 
 def load_config(win, frame):
