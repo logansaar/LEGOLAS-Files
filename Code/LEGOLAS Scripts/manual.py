@@ -13,13 +13,20 @@ import ctypes
 
 import sv_ttk
 
-ctypes.windll.shcore.SetProcessDpiAwareness(1)
+import os
+if os.name == 'nt':
+    # windows GUI graphic options
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+else:
+    # no avaliable for linux/mac system
+    pass
 
 """
 TODO:
 1. Add <<ComboboxSelected>> event to every box. 
     a. The location field should change accordingly
     b. Register values to Combo box when other new keys is entered
+2. Dynamicall scale th window size based on resolution
 """
 
 # global params
@@ -114,14 +121,14 @@ def goto_motor_pos(positions_map, entry_pos_name, motor):
         pos_name = entry_pos_name.get()
         
         pos = positions_map[pos_name]
-        #motor.move_to_pos(
-        #    motor=motor,
-        #    pos=pos,
-        #    speed=5,
-        #    max_iter=4
-        #)
-        curr_pos = motor.get_position()
-        motor.run_for_degrees(pos-curr_pos, speed=5)
+        motor_move_to_pos(
+           motor=motor,
+           pos=pos,
+           speed=5,
+           max_iter=4
+        )
+        # curr_pos = motor.get_position()
+        # motor.run_for_degrees(pos-curr_pos, speed=5)
     else:
         pass
 
@@ -456,8 +463,7 @@ def depo_volumn_map_popup(win, depo_device):
     label_pos = ttk.Label(frame, text="Pos: ")
     label_pos_v = ttk.Label(frame)
     btn_log_volume = ttk.Button(frame, text="Enter", command=partial(log_deposition_volume, depo_device=depo_device, entry_weight=entry_weight, entry_vwr=entry_vwr, lbl_v=label_pos_v))
-    btn_clear_volume = ttk.Button(frame, text="Clear", command=partial)
-
+    btn_clear_volume = ttk.Button(frame, text="Clear", command=partial(clear_deposition_volume, depo_device=depo_device))
     label_volume_cali.grid(row=0, column=0, sticky='w')
     label_volume_cali_memo.grid(row=1, column=0, columnspan=2, sticky='w')
     label_weight.grid(row=2, column=0, sticky='w')
@@ -641,7 +647,9 @@ def manual_stage(window, context):
     frame_cali.grid(row=2, column=0, sticky="w", pady=(10, 10), padx=10,)
 
     menubar = tk.Menu(window)
-    menubar.add_command(label="Export", command=partial(export_config, win=window))
+    filemenu = tk.Menu(menubar)
+    menubar.add_cascade(label="File", menu=filemenu)
+    filemenu.add_command(label="Export", command=partial(export_config, win=window))
 
     # filemenu = tk.Menu(menubar, tearoff=0)
     # menubar.add_cascade(label="File", menu=filemenu)
@@ -766,60 +774,55 @@ def load_config(win, frame):
         context.depo_device = depo_device
         context.pi1_address = config['global']['pi1_address']
         context.pi2_address = config['global']['pi2_address']
-
-        context.stage = stage
-        context.pH_device = pH_device
-        context.depo_device = depo_device
-        context.pi1_address = config['global']['pi1_address']
-        context.pi2_address = config['global']['pi2_address']
         
     except Exception as e:
+        messagebox.showerror("Error", f"Cannot via config, check file integrity.\n Error Messge: {e}")
 
-        ( r_buildhat1, r_serial1, r_threading1, 
-        motor_X, sensor_X, motor_Y, sensor_Y, 
-        r_buildhat2, motor_pH, motor_S, motor_V ) = [None] * 11
+        # ( r_buildhat1, r_serial1, r_threading1, 
+        # motor_X, sensor_X, motor_Y, sensor_Y, 
+        # r_buildhat2, motor_pH, motor_S, motor_V ) = [None] * 11
 
-        stage = Stage(
-            motor_X = motor_X,
-            motor_Y = motor_Y,
-            sensor_X = sensor_X,
-            sensor_Y = sensor_Y,
-            home_x_offset = -100, 
-            home_y_offset = -100, 
-            cell_loc_map = np.array([[]]),
-            aux_loc_map = {}
-        )
+        # stage = Stage(
+        #     motor_X = motor_X,
+        #     motor_Y = motor_Y,
+        #     sensor_X = sensor_X,
+        #     sensor_Y = sensor_Y,
+        #     home_x_offset = -100, 
+        #     home_y_offset = -100, 
+        #     cell_loc_map = np.array([[]]),
+        #     aux_loc_map = {}
+        # )
 
+        # depo_device = DepositionDevice(
+        #     stage, 
+        #     x_offset=None, 
+        #     y_offset=None, 
+        #     motor_S=motor_S, 
+        #     motor_V=motor_V, 
+        #     vol_deg_map={}, 
+        #     s_positions={},
+        # )
 
-        depo_device = DepositionDevice(
-            stage, 
-            x_offset=None, 
-            y_offset=None, 
-            motor_S=motor_S, 
-            motor_V=motor_V, 
-            vol_deg_map={}, 
-            s_positions={},
-        )
+        # pH_device = pHDevice(
+        #     stage, 
+        #     x_offset=None, 
+        #     y_offset=None, 
+        #     motor_pH=motor_pH, 
+        #     pH_positions={}, 
+        #     pH_serial=r_serial1, 
+        #     verbose=True
+        # )
 
-        pH_device = pHDevice(
-            stage, 
-            x_offset=None, 
-            y_offset=None, 
-            motor_pH=motor_pH, 
-            pH_positions={}, 
-            pH_serial=r_serial1, 
-            verbose=True
-        )
-
-        context.stage = stage
-        context.pH_device = pH_device
-        context.depo_device = depo_device
-        context.pi1_address = None
-        context.pi2_address = None
+        # context.stage = stage
+        # context.pH_device = pH_device
+        # context.depo_device = depo_device
+        # context.pi1_address = None
+        # context.pi2_address = None
 
     finally:
         frame.destroy()
         manual_stage(win, context)
+
 
     # create_motors_manual_state(context.stage)
 

@@ -45,6 +45,14 @@ ports_map_pi2 = {
 # or "ls /dev/tty*" and find anything end with ACM
 pH_serial_port = "/dev/ttyACM0"
 
+def motor_move_to_pos(motor, pos, speed=None, max_iter=4, blocking=True):
+    curr_pos = motor.get_position()
+    n = 0
+    while pos != curr_pos and n < max_iter:
+        motor.run_for_degrees(pos - curr_pos, speed=speed, blocking=blocking)
+        curr_pos = motor.get_position()
+        n += 1
+
 
 def connect_pi1(address, ports_map):
     # Connect to and Define Buildhats 
@@ -388,12 +396,12 @@ class DepositionDevice(DeviceOnStage):
 
     def to_zpos(self, pos, max_iter=4):
         pos = self.s_positions[pos]
-        curr_pos = self.motor_S.get_position()
-        n = 0
-        while pos != curr_pos and n < max_iter:
-            self.motor_S.run_for_degrees(pos - curr_pos)
-            curr_pos = self.motor_S.get_position()
-            n+=1
+        motor_move_to_pos(
+            motor=self.motor_S,
+            pos=pos,
+            speed=5,
+            max_iter=max_iter,
+        )
 
 
     def acquire(self, vol=None, acq_degree=None, location=None, row=None, col=None, x_degree=None, y_degree=None):
@@ -470,7 +478,7 @@ class DepositionDevice(DeviceOnStage):
                 if residual_volume > self._vol_max:
                     v = self._vol_max
                 else:
-                    v = self.residual_vol
+                    v = residual_volume
                 deg = self._vol_deg_f(v)
                 self.acquire(acq_degree=deg, location=location)
                 self.deposition(dep_degree=deg, row=row, col=col)
@@ -514,12 +522,12 @@ class pHDevice(DeviceOnStage):
 
     def to_zpos(self, pos, max_iter=4):
         pos = self.pH_positions[pos]
-        curr_pos = self.motor_pH.get_position()
-        n = 0
-        while pos != curr_pos and n < max_iter:
-            self.motor_pH.run_for_degrees(pos - curr_pos)
-            curr_pos = self.motor_pH.get_position()
-            n+=1
+        motor_move_to_pos(
+            motor=self.motor_pH,
+            pos=pos,
+            speed=20,
+            max_iter=max_iter,
+        )
 
 
     def clean(self, wait_time=1.0):        
