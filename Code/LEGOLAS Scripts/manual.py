@@ -1,4 +1,5 @@
 from core import *
+import utils
 import tkinter as tk
 import tkinter.ttk as ttk
 
@@ -678,6 +679,24 @@ def create_motors_manual_state(stage):
 
     return motor_X, motor_X_state, motor_Y, motor_Y_state, motor_pH, motor_pH_state, motor_S, motor_S_state, motor_V, motor_V_state
 
+def reset_pis_server(win, frame):
+    host_1 = simpledialog.askstring("Input", "Pi1 IP address", parent=win)
+    host_1 = host_1.strip()
+    try:
+        utils.restart_server(host=host_1)
+    except Exception as e:
+        messagebox.showerror("Error", f"Cannot connect to Pi1, try again.\n {e}")
+        return 
+
+    host_2 = tk.simpledialog.askstring("Input", "Pi2 IP address", parent=win)
+    host_2 = host_2.strip()
+
+    try:
+        utils.restart_server(host=host_2)
+    except Exception as e:
+        messagebox.showerror("Error", f"Cannot connect to Pi2, try again.\n {e}")
+        return 
+
 
 def connect_pis(win, frame):
     global context
@@ -880,9 +899,12 @@ def main():
 
     btn_ip = ttk.Button(frame_init, text="Connect via IP", width=20, command=partial(connect_pis, win=win, frame=frame_init) ) 
     btn_config = ttk.Button(frame_init, text="Connect via Config", width=20, command=partial(load_config, win=win, frame=frame_init) )
+    btn_reset = ttk.Button(frame_init, text="Reset Server", width=20, command=partial(reset_pis_server, win=win, frame=frame_init) )
 
     btn_ip.grid(row=0, column=0)
     btn_config.grid(row=0, column=1)
+    btn_reset.grid(row=0, column=2)    
+
     frame_init.pack()
 
     win.mainloop()
