@@ -817,7 +817,7 @@ def export_config(win):
                                     filetypes= [('all files', '.*'), ('yaml files', '.yaml')])
 
     try:
-        if path is None: raise ValueError("Path is None")
+        if path is None or path == "None": raise ValueError("Path is None")
         path = Path(path)
         manager.export(folder=path.parent, config_name=path.name)
     except Exception as e:
