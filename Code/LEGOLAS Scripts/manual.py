@@ -845,7 +845,7 @@ def load_config(win, frame):
         
     except Exception as e:
         messagebox.showerror("Error", f"Cannot via config, check file integrity.\n Error Messge: {e}")
-
+        return 
         # ( r_buildhat1, r_serial1, r_threading1, 
         # motor_X, sensor_X, motor_Y, sensor_Y, 
         # r_buildhat2, motor_pH, motor_S, motor_V ) = [None] * 11
@@ -887,9 +887,9 @@ def load_config(win, frame):
         # context.pi1_address = None
         # context.pi2_address = None
 
-    finally:
-        frame.destroy()
-        manual_stage(win, context)
+    # finally:
+    frame.destroy()
+    manual_stage(win, context)
 
 
     # create_motors_manual_state(context.stage)
