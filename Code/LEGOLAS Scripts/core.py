@@ -5,6 +5,7 @@ import sys, os
 import yaml
 import pickle
 from pathlib import Path
+import copy
 
 # import paramiko # for interacting over ssh
 import rpyc # lets you interact with remote devices as if local
@@ -121,7 +122,7 @@ class ConfigurationManager:
         folder.mkdir(exist_ok=True)
         path = folder / config_name
 
-        export_config = dict(self.config)
+        export_config = copy.deepcopy(self.config)
 
         for k, v in self._config_special['stage'].items():
             save_method = v[0]
