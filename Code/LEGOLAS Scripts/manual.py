@@ -79,6 +79,9 @@ class App(threading.Thread):
 connection_manager = ConnectionManager()
 context = Context()
 
+def set_motor_coasts():
+    pass
+
 # define all the UI
 
 def sign(i):
@@ -790,11 +793,11 @@ def connect_pis(win, frame):
         verbose=True
     )
 
-    context.stage.motor_Y._write(f"port {context.stage.motor_Y.port} ; coast\r")
-    context.pH_device.motor_pH._write(f"port {context.pH_device.motor_pH.port} ; coast\r")
-    context.depo_device.motor_S._write(f"port {context.depo_device.motor_S.port} ; coast\r")
-    context.depo_device.motor_V._write(f"port {context.depo_device.motor_V.port} ; coast\r")
-    context.stage.motor_X._write(f"port {context.stage.motor_X.port} ; coast\r")
+    # context.stage.motor_Y._write(f"port {context.stage.motor_Y.port} ; coast\r")
+    # context.pH_device.motor_pH._write(f"port {context.pH_device.motor_pH.port} ; coast\r")
+    # context.depo_device.motor_S._write(f"port {context.depo_device.motor_S.port} ; coast\r")
+    # context.depo_device.motor_V._write(f"port {context.depo_device.motor_V.port} ; coast\r")
+    # context.stage.motor_X._write(f"port {context.stage.motor_X.port} ; coast\r")
 
     frame.destroy()
     manual_stage(win, context)
@@ -988,4 +991,17 @@ if __name__ == "__main__":
 
     # manually close all the conn connection to release the rpyc module
     # hope it would solve the port already in use issue.
+    # print("set all motor to off")
+    # cmd = "off"
+    # context.stage.motor_Y._write(f"port {context.stage.motor_Y.port} ; {cmd}\r")
+    # context.pH_device.motor_pH._write(f"port {context.pH_device.motor_pH.port} ; {cmd}\r")
+    # context.depo_device.motor_S._write(f"port {context.depo_device.motor_S.port} ; {cmd}\r")
+    # context.depo_device.motor_V._write(f"port {context.depo_device.motor_V.port} ; {cmd}\r")
+    # context.stage.motor_X._write(f"port {context.stage.motor_X.port} ; {cmd}\r")
+    # time.sleep(10)
+
+    print("close rpyc connection")
     connection_manager.close()
+    # time.sleep(10)
+
+    print("exit")
