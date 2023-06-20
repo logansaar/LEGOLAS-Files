@@ -66,6 +66,10 @@ def connect_pi1(address, ports_map):
     motor_Y = r_buildhat1.Motor(ports_map['motor']['y'])        # Y axis
     sensor_Y = r_buildhat1.ForceSensor(ports_map['force_sensor']['y']) # Y axis sensor
     pH_serial = r_serial1.Serial(pH_serial_port)
+
+    # unlock the motor
+    motor_Y._write(f"port {motor_Y.port} ; coast\r")
+
     return conn, r_buildhat1, r_serial1, r_threading1, sensor_X, motor_Y, sensor_Y, pH_serial
 
 
@@ -78,6 +82,11 @@ def connect_pi2(address, ports_map):
     motor_pH = r_buildhat2.Motor(ports_map['motor']['pH_z'])      # pH control 
     motor_S = r_buildhat2.Motor(ports_map['motor']['syringe_z'])       # syringe control (Z axis movement)
     motor_V =  r_buildhat2.Motor(ports_map['motor']['syringe_plunger'])      # volume control (plunger)
+
+    motor_pH._write(f"port {motor_pH.port} ; coast\r")
+    motor_S._write(f"port {motor_S.port} ; coast\r")
+    motor_V._write(f"port {motor_V.port} ; coast\r")
+    motor_X._write(f"port {motor_X.port} ; coast\r")
 
     return conn, r_buildhat2, motor_X, motor_pH, motor_S, motor_V
 
