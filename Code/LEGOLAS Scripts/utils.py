@@ -28,7 +28,7 @@ def restart_server(
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(host, username=username, password=password, port=port)
+    ssh.connect(host, username=username, password=password, port=port, allow_agent=False)    #CO20230620 - adding allow_agent=False
 
     find_server_cmd = "ps aux | grep rpyc_classic"
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(find_server_cmd)
