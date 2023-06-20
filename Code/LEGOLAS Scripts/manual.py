@@ -815,9 +815,10 @@ def export_config(win):
                                     initialdir=os.getcwd(),
                                     title="Please enter the export path of the configuration file:",
                                     filetypes= [('all files', '.*'), ('yaml files', '.yaml')])
-    path = Path(path)
 
     try:
+        if path is None: raise ValueError
+        path = Path(path)
         manager.export(folder=path.parent, config_name=path.name)
     except Exception as e:
         path = Path(os.getcwd()) / "config.yaml"
