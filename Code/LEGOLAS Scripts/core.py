@@ -121,18 +121,20 @@ class ConfigurationManager:
         folder.mkdir(exist_ok=True)
         path = folder / config_name
 
+        export_config = dict(self.config)
+
         for k, v in self._config_special['stage'].items():
             save_method = v[0]
-            self.config['stage'][k] = save_method(self.config['stage'][k], folder)
+            export_config['stage'][k] = save_method(self.config['stage'][k], folder)
         
         if "devices" in self._config_special:
             for d, d_c in self._config_special['devices'].items():
                 for k, v in d_c.items():
                     save_method = v[0]
-                    d_c[k] = save_method(self.config[d][k], folder)
+                    d_c[k] = save_method(export_config[d][k], folder)
 
         with path.open("w") as f:
-            yaml.dump(self.config, f)
+            yaml.dump(export_config, f)
 
     @staticmethod    
     def load(config_path):
@@ -181,6 +183,7 @@ def load_from_config(config_path):
 
 
 def save_cell_map(cell_map, path):
+    cell_map = cell_map.copy()
     cell_map_path = path / "cell_map.pkl"
     with cell_map_path.open("wb") as f:
         pickle.dump(cell_map, f)

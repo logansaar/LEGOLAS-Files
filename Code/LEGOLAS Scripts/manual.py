@@ -817,12 +817,12 @@ def export_config(win):
                                     filetypes= [('all files', '.*'), ('yaml files', '.yaml')])
 
     try:
-        if path is None: raise ValueError
+        if path is None: raise ValueError("Path is None")
         path = Path(path)
         manager.export(folder=path.parent, config_name=path.name)
     except Exception as e:
         path = Path(os.getcwd()) / "config.yaml"
-        messagebox.showinfo(title="Alert", message=f"The askfilename module currently is not compatible with {platform.system()}. The config file is saved to {path}")
+        messagebox.showinfo(title="Alert", message=f"The askfilename module currently is not compatible with {platform.system()}. {e}. The config file is saved to {path}")
         manager.export(folder=path.parent, config_name=path.name)
 
 
