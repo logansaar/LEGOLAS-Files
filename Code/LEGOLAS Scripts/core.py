@@ -422,7 +422,7 @@ class DepositionDevice(DeviceOnStage):
         if acq_degree is None and vol is not None:
             if vol > self._vol_max:
                 vol = self._vol_max
-            acq_degree = self._vol_deg_f(vol)
+            acq_degree = float(self._vol_deg_f(vol))
         elif acq_degree is not None and vol is None:
             vol = self._deg_vol_f(acq_degree)
         elif acq_degree is not None and vol is not None:
@@ -455,7 +455,7 @@ class DepositionDevice(DeviceOnStage):
         if dep_degree is None and vol is not None:
             if vol > self.volume:
                 vol = self.volume
-            dep_degree = self._vol_deg_f(vol)
+            dep_degree = float(self._vol_deg_f(vol))
         elif dep_degree is not None and vol is None:
             vol = self._deg_vol_f(dep_degree)
         elif dep_degree is not None and vol is not None:
