@@ -7,4 +7,4 @@ LEGOLAS is the **LEGO** Based **L**ow-cost **A**utonomous **S**cientist
 
 Please refer to Chapter 2 of this [thesis](https://github.com/logansaar/LEGOLAS-Files/blob/main/Saar%20Thesis%20Final%20Document.pdf) for a top-level overview of LEGOLAS construction, setup, and use: 
 
-For inquiries regarding Python templates and educational worksheets that address additional active learning schemas, please contact:  takeuchi@umd.edu, agiladk@gmail.com
+For inquiries regarding Python templates and educational worksheets that address additional active learning schemas, please contact:  takeuchi@umd.edu, aaron.kusne@nist.gov
